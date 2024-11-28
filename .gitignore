@@ -1,0 +1,7 @@
+archive
+
+# data (private repo data and personal names of authors)
+*.txt
+*.csv
+!github_urls.txt
+!repo_names.txt
