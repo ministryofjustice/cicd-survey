@@ -1,7 +1,7 @@
 #!/bin/bash
 
 input_file="repo_names.txt"
-output_file="gha_workflow_url.txt"
+output_file="circleci_config_urls.txt"
 base_dir="$HOME/laa-code"
 
 # Create or clear the output file
@@ -13,13 +13,13 @@ get_default_branch() {
   git -C "$repo_dir" symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
 }
 
-# Function to check if the workflows directory has files
-check_workflows() {
+# Function to check if the CircleCI config file exists
+check_circleci_config() {
   repo_dir="$1"
   default_branch=$(get_default_branch "$repo_dir")
-  workflows_dir="$repo_dir/.github/workflows"
-  if [ -d "$workflows_dir" ] && [ "$(ls -A "$workflows_dir")" ]; then
-    echo "https://github.com/ministryofjustice/$repo_name/tree/$default_branch/.github/workflows"
+  circleci_config="$repo_dir/.circleci/config.yml"
+  if [ -f "$circleci_config" ]; then
+    echo "https://github.com/ministryofjustice/$repo_name/blob/$default_branch/.circleci/config.yml"
   else
     echo "-"
   fi
@@ -33,12 +33,12 @@ while IFS= read -r repo_name; do
   else
     repo_dir="$base_dir/$repo_name"
     if [ -d "$repo_dir" ]; then
-      gha_url=$(check_workflows "$repo_dir")
-      echo "$gha_url" >> "$output_file"
+      circleci_url=$(check_circleci_config "$repo_dir")
+      echo "$circleci_url" >> "$output_file"
     else
       echo "Repository directory $repo_dir does not exist." >> "$output_file"
     fi
   fi
 done < "$input_file"
 
-echo "GitHub Action workflow URLs have been saved to $output_file"
+echo "CircleCI config URLs have been saved to $output_file"
